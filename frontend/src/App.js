@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
@@ -17,7 +16,7 @@ function App() {
 
   useEffect(() => {
     fetchEvents();
-    const interval = setInterval(fetchEvents, 15000);
+    const interval = setInterval(fetchEvents, 15000); // every 15 sec
     return () => clearInterval(interval);
   }, []);
 
