@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -7,9 +6,13 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-client = MongoClient("mongodb+srv://dhanashreedhabarde:CdCu769MzMTPwX0y@cluster0.n9xx0xa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-db = client["webhook_db"]
-collection = db["events"]
+# MongoDB connection
+client = MongoClient(
+    "mongodb+srv://dhanashreedhabarde:CdCu769MzMTPwX0y@cluster0.n9xx0xa.mongodb.net/vishu?retryWrites=true&w=majority&appName=Cluster0&ssl=true",
+    tls=True,
+    tlsAllowInvalidCertificates=True
+)
+
 
 @app.route('/')
 def home():
@@ -45,7 +48,9 @@ def webhook():
 
     if event:
         collection.insert_one(event)
+        print("✅ Event inserted into MongoDB:", event)
         return jsonify({"status": "success"}), 200
+
     return jsonify({"status": "ignored"}), 200
 
 @app.route('/events', methods=['GET'])
@@ -53,5 +58,25 @@ def get_events():
     events = list(collection.find().sort("_id", -1).limit(10))
     return jsonify([e["message"] for e in events])
 
+
 if __name__ == "__main__":
+    from pymongo import MongoClient
+
+    client = MongoClient(
+        "mongodb+srv://dhanashreedhabarde:CdCu769MzMTPwX0y@cluster0.n9xx0xa.mongodb.net/vishu?retryWrites=true&w=majority&appName=Cluster0&ssl=true",
+        tls=True,
+        tlsAllowInvalidCertificates=True
+    )
+    db = client["webhook_db"]
+    collection = db["events"]
+
+    collection.insert_one({"type": "test", "message": "manual test insert"})
+    print("✅ Inserted into MongoDB!")
+
     app.run(port=5000)
+
+
+
+ 
+
+
